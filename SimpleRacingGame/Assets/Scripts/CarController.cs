@@ -46,7 +46,12 @@ namespace Car
             Debug.Log("Accelerating: " + accelerateInput);
             Debug.Log("Turn: " + turnInput);
 
-            currentYRotation += turnInput * turnSpeed * Time.deltaTime;
+            //漂移效果，使用速度方向点乘前方，偏移量越大，乘积越小，转向变化越慢
+            //同时防止车静止时可以原地转圈
+            float turnRate = Vector3.Dot(rig.velocity.normalized, carModelTransform.forward);
+            turnRate = Mathf.Abs(turnRate);
+
+            currentYRotation += turnInput * turnSpeed * turnRate * Time.deltaTime;
 
             carModelTransform.position = transform.position + startModelOffset;
             carModelTransform.eulerAngles = new Vector3(0, currentYRotation, 0);
